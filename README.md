@@ -142,10 +142,9 @@ Read and complete `model_card.md`:
 
 [**Model Card**](model_card.md)
 
-Write 1 to 2 paragraphs here about what you learned:
+The biggest thing I learned is that weights are where the real decisions live. The formula is just addition. But choosing that energy is worth 5 points and mood is worth 1 point is a value judgment. It quietly decides whose taste the system serves well and whose it ignores. I didn't fully appreciate that until I changed one number and watched the whole ranking shift.
 
-- about how recommenders turn data into predictions
-- about where bias or unfairness could show up in systems like this
+I was also surprised that such a simple algorithm could feel like a real recommendation. No machine learning. No listening history. Just measuring distance on a number line. And yet when the right song came back at #1, it genuinely felt correct. That made me think differently about how much of "intelligence" in these systems is actually just careful feature design.
 
 
 ---
@@ -256,3 +255,11 @@ A few sentences about what you learned:
 - Where do you think human judgment still matters, even if the model seems "smart"
 
 ![App Terminal](/terminal_screen.png)
+
+## Profile Recommendation Screenshotts
+
+![Profile 1](/profile_recommendation1.png)
+![Profile 2](/profile_recommendation2.png)
+![Profile 3](/profile_recommendation3.png)
+![Profile 4](/profile_recommendation4.png)
+![Profile 5](/profile_recommendation5.png)

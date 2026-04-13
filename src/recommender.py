@@ -72,8 +72,9 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
     reasons = []
 
     # --- Tier 1: numeric proximity scores (max points shown per feature) ---
+    # Max possible score: 5.0 + 2.0 + 2.0 + 1.5 + 0.5 + 1.0 = 12.0
     numeric_features = [
-        ("energy",        "target_energy",        2.5),
+        ("energy",        "target_energy",        5.0),
         ("valence",       "target_valence",        2.0),
         ("danceability",  "target_danceability",   2.0),
         ("acousticness",  "target_acousticness",   1.5),
@@ -88,8 +89,8 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
 
     # --- Tier 2: categorical match scores ---
     if song["genre"] == user_prefs.get("favorite_genre"):
-        score += 1.0
-        reasons.append("genre match (+1.0)")
+        score += 0.5
+        reasons.append("genre match (+0.5)")
 
     if song["mood"] == user_prefs.get("favorite_mood"):
         score += 1.0
