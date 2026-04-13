@@ -17,17 +17,63 @@ Replace this paragraph with your own summary of what your version does.
 
 ## How The System Works
 
-Explain your design in plain language.
+Major streaming services use a combination of collaborative filtering (using others' listening behavior) and content-based filtering (using a song's own attributes) to recommend songs. My system prioritizes **content-based filtering** since there is only one user — no crowd data to draw from.
 
-Some prompts to answer:
+### Song Features Used
 
-- What features does each `Song` use in your system
-  - For example: genre, mood, energy, tempo
-- What information does your `UserProfile` store
-- How does your `Recommender` compute a score for each song
-- How do you choose which songs to recommend
+Each song carries ten attributes from `data/songs.csv`:
 
-You can include a simple diagram or bullet list if helpful.
+| Feature | Type | Role |
+|---------|------|------|
+| `genre` | categorical | primary taste filter |
+| `mood` | categorical | secondary taste filter |
+| `energy` | 0–1 float | activity/intensity level |
+| `acousticness` | 0–1 float | texture preference |
+| `valence` | 0–1 float | emotional positivity |
+| `tempo_bpm` | integer BPM | pace preference |
+| `danceability` | 0–1 float | groove/movement fit |
+
+### User Profile
+
+The `UserProfile` stores the listener's taste targets:
+
+- `favorite_genre` and `favorite_mood` — categorical preferences
+- `target_energy`, `target_valence`, `target_danceability`, `target_acousticness` — ideal numeric values (0–1)
+- `target_tempo_bpm` — ideal tempo in beats per minute
+
+### Algorithm Recipe
+
+Every song is scored by summing two kinds of signals:
+
+**Categorical (exact match bonus)**
+
+| Signal | Points |
+|--------|--------|
+| Genre matches `favorite_genre` | +2.0 |
+| Mood matches `favorite_mood` | +1.0 |
+
+**Continuous (proximity score)**
+
+Each numeric feature earns `weight × (1 − |song_value − target_value|)` — full points when exact, tapering as the values diverge. Tempo uses a normalized difference: `1 − (|song_bpm − target_bpm| / 120)`, clamped to [0, 1].
+
+| Feature | Weight | Max Points |
+|---------|--------|-----------|
+| Energy | ×1.5 | 1.5 |
+| Acousticness | ×1.5 | 1.5 |
+| Valence | ×1.0 | 1.0 |
+| Tempo | ×0.75 | 0.75 |
+| Danceability | ×0.50 | 0.50 |
+
+**Maximum possible score: 8.25 points.**
+
+Songs are ranked in descending score order and the top-k are returned.
+
+### Potential Biases
+
+- **Genre dominance** — at +2.0, a genre match is worth more than any single continuous signal. A song with a perfect energy, acousticness, and mood fit but the wrong genre will almost always score below a mediocre same-genre track.
+- **Mood is binary** — mood matching is all-or-nothing. A song tagged `relaxed` gets zero mood credit for a `chill` user even though those moods are very close in feel.
+- **Catalog skew** — the 18-song dataset has 3 lofi songs but only 1 jazz song. A lofi user benefits from more variety; a jazz user has almost nowhere to go.
+- **Single-user assumption** — the profile stores one fixed taste snapshot. It cannot adapt to context (studying vs. working out) or learn from listening history.
 
 ---
 
@@ -209,3 +255,4 @@ A few sentences about what you learned:
 - How did building this change how you think about real music recommenders
 - Where do you think human judgment still matters, even if the model seems "smart"
 
+![App Terminal](/terminal_screen.png)
